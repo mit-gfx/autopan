@@ -1,0 +1,202 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0341994B134E623D00D344BC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0341994A134E623D00D344BC /* main.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		03419944134E623D00D344BC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		03419946134E623D00D344BC /* VideoAverage */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VideoAverage; sourceTree = BUILT_PRODUCTS_DIR; };
+		0341994A134E623D00D344BC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		0341994C134E623E00D344BC /* VideoAverage.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = VideoAverage.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		03419943134E623D00D344BC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0341993B134E623D00D344BC = {
+			isa = PBXGroup;
+			children = (
+				03419949134E623D00D344BC /* VideoAverage */,
+				03419947134E623D00D344BC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		03419947134E623D00D344BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				03419946134E623D00D344BC /* VideoAverage */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		03419949134E623D00D344BC /* VideoAverage */ = {
+			isa = PBXGroup;
+			children = (
+				0341994A134E623D00D344BC /* main.cpp */,
+				0341994C134E623E00D344BC /* VideoAverage.1 */,
+			);
+			path = VideoAverage;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		03419945134E623D00D344BC /* VideoAverage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0341994F134E623E00D344BC /* Build configuration list for PBXNativeTarget "VideoAverage" */;
+			buildPhases = (
+				03419942134E623D00D344BC /* Sources */,
+				03419943134E623D00D344BC /* Frameworks */,
+				03419944134E623D00D344BC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VideoAverage;
+			productName = VideoAverage;
+			productReference = 03419946134E623D00D344BC /* VideoAverage */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0341993D134E623D00D344BC /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 03419940134E623D00D344BC /* Build configuration list for PBXProject "VideoAverage" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0341993B134E623D00D344BC;
+			productRefGroup = 03419947134E623D00D344BC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				03419945134E623D00D344BC /* VideoAverage */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		03419942134E623D00D344BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0341994B134E623D00D344BC /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0341994D134E623E00D344BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		0341994E134E623E00D344BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		03419950134E623E00D344BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		03419951134E623E00D344BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		03419940134E623D00D344BC /* Build configuration list for PBXProject "VideoAverage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0341994D134E623E00D344BC /* Debug */,
+				0341994E134E623E00D344BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0341994F134E623E00D344BC /* Build configuration list for PBXNativeTarget "VideoAverage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03419950134E623E00D344BC /* Debug */,
+				03419951134E623E00D344BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0341993D134E623D00D344BC /* Project object */;
+}
