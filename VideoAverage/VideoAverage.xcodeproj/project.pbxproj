@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0341994B134E623D00D344BC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0341994A134E623D00D344BC /* main.cpp */; };
 		03419953134E650000D344BC /* libopencv_core.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 03419952134E650000D344BC /* libopencv_core.dylib */; };
+		B23C9B1913DDD71E00BF9003 /* libopencv_highgui.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B23C9B1813DDD71E00BF9003 /* libopencv_highgui.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,7 @@
 		0341994A134E623D00D344BC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0341994C134E623E00D344BC /* VideoAverage.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = VideoAverage.1; sourceTree = "<group>"; };
 		03419952134E650000D344BC /* libopencv_core.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.dylib; path = usr/local/lib/libopencv_core.dylib; sourceTree = SDKROOT; };
+		B23C9B1813DDD71E00BF9003 /* libopencv_highgui.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_highgui.dylib; path = usr/local/lib/libopencv_highgui.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B23C9B1913DDD71E00BF9003 /* libopencv_highgui.dylib in Frameworks */,
 				03419953134E650000D344BC /* libopencv_core.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -45,6 +48,7 @@
 		0341993B134E623D00D344BC = {
 			isa = PBXGroup;
 			children = (
+				B23C9B1813DDD71E00BF9003 /* libopencv_highgui.dylib */,
 				03419952134E650000D344BC /* libopencv_core.dylib */,
 				03419949134E623D00D344BC /* VideoAverage */,
 				03419947134E623D00D344BC /* Products */,
@@ -93,6 +97,9 @@
 /* Begin PBXProject section */
 		0341993D134E623D00D344BC /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0410;
+			};
 			buildConfigurationList = 03419940134E623D00D344BC /* Build configuration list for PBXProject "VideoAverage" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -161,7 +168,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -175,7 +182,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -201,6 +208,7 @@
 				03419951134E623E00D344BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

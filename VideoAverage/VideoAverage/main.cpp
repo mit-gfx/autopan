@@ -1,18 +1,40 @@
-#include <iostream>
 #include <opencv2/opencv.hpp>
+#include <iostream>
+
+using namespace cv;
+
 
 int main (int argc, const char * argv[])
 {
-    // Some arbitrary width/height for testing.
-    int width = 720, height = 480;
-
-    // Create an image.
-    // IPL_DEPTH_32F tells it to use 32-bit floats for the image, so we don't run out of precision
-    IplImage* image = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 3);
+    double alpha = 0.5 ; double beta = 0.0; double input;
     
-    // insert code here...
-    // Delete the above as necessary
-    std::cout << "Hello, World!\n";
-    std::cout << "Image size: " << image->width << "x" << image->height << "\n";
+    Mat src1, src2, dst;
+    // argv[1] is the path to the first image
+    // argv[2] is the path to the second image
+    std::cout<<"Simple Linear Blender"<<std::endl;
+    std::cout<<"* Enter alpha [0-1]: ";
+    std::cin>>input;
+    
+    if( input >= 0 && input <= 1 )
+    { alpha = input; }
+    
+    src1 = imread( "/Users/yanling/Documents/autopan/cat.jpg");
+    src2 = imread( "/Users/yanling/Documents/autopan/dog.jpg");
+    
+    if( !src1.data ) { printf("Error loading src1 \n"); return -1; }
+    if( !src2.data ) { printf("Error loading src2 \n"); return -1; }
+    
+    namedWindow("Linear Blend", 1);
+    
+    beta = ( 1.0 - alpha );
+    addWeighted( src1, alpha, src2, beta, 0.0, dst);
+    
+    imwrite("/Users/yanling/Documents/autopan/blend.png", dst);
+    
+    imshow( "Linear Blend", dst );
+    
+    waitKey(0);
     return 0;
 }
+    
+
