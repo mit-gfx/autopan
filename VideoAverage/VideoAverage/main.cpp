@@ -1,40 +1,41 @@
 #include <opencv2/opencv.hpp>
-#include <iostream>
+#include <vector>
 
+using std::vector;
 using namespace cv;
 
+bool record = false;
 
-int main (int argc, const char * argv[])
+int main(int, char**)
 {
-    double alpha = 0.5 ; double beta = 0.0; double input;
+    vector<Mat> frames;
     
-    Mat src1, src2, dst;
-    // argv[1] is the path to the first image
-    // argv[2] is the path to the second image
-    std::cout<<"Simple Linear Blender"<<std::endl;
-    std::cout<<"* Enter alpha [0-1]: ";
-    std::cin>>input;
+    VideoCapture cap(0); 
+    if(!cap.isOpened())  
+    return -1;
     
-    if( input >= 0 && input <= 1 )
-    { alpha = input; }
+    Mat edges;
+    namedWindow("video",1);
+        
+    while(record == false)
+    {
+         if(waitKey('r') >= 0) record =true;
+    }
     
-    src1 = imread( "/Users/yanling/Documents/autopan/cat.jpg");
-    src2 = imread( "/Users/yanling/Documents/autopan/dog.jpg");
+    while(record == true)
+    {
+        Mat frame;
+        cap.read(frame);
+        imshow("video", frame);
+        frames.push_back(frame);
+        
+        if(waitKey('s') >=0 ) record =false;
+    }
     
-    if( !src1.data ) { printf("Error loading src1 \n"); return -1; }
-    if( !src2.data ) { printf("Error loading src2 \n"); return -1; }
-    
-    namedWindow("Linear Blend", 1);
-    
-    beta = ( 1.0 - alpha );
-    addWeighted( src1, alpha, src2, beta, 0.0, dst);
-    
-    imwrite("/Users/yanling/Documents/autopan/blend.png", dst);
-    
-    imshow( "Linear Blend", dst );
-    
-    waitKey(0);
+    for (int f = 0; f < frames.size(); f++) {
+        Mat frame = frames[f];
+        // blend together, analyze, etc., etc.
+    }
+  
     return 0;
 }
-    
-
