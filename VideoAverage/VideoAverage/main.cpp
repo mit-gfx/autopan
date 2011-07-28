@@ -10,6 +10,7 @@ double alpha;
 double beta;
 
 Mat dst;
+Mat firstframe;
 vector<Mat> frames;
 vector<Point2f> points;
 CvPoint a;
@@ -24,6 +25,7 @@ void mousecallback(int event, int x, int y, int, void* )          //mouse call b
             Point seed = Point(x,y);
             a = Point(x,y);
             printf("x:, %d y: %d",a.x ,a.y);
+            std::cout<<"-----"<<std::endl;
             mouseclick = true;
             break;
     }
@@ -51,37 +53,62 @@ int main(int, char**)
         frames.push_back(frame.clone());                          //recording (push_back)
         if(waitKey('s') == 83) record =false;                     //finish the record
     }
+    destroyWindow("Video");
     
     //-------------------select--------------------------
     
     namedWindow("Select");                            
-    imshow("Select", frames[0]);                                  //show the first frame of the video 
+    imshow("Select", frames[0]);                                   //show the first frame of the video 
     
     setMouseCallback("Select", mousecallback);
 
     while(mouseclick == false){
-        waitKey(0);                                               //press any key to continue...
+        waitKey(0);                                                //press any key to continue...
     }
+    destroyWindow("Select");
     
     //--------------find features to track---------------
     
-    destroyWindow("Video");
-    
     namedWindow("Display Features");
+    firstframe = frames[0];
 
     Mat trackingImage;
     cvtColor(frames[0], trackingImage, CV_RGB2GRAY);
-    printf("tracking image type: 0x%x (CV_8UC1: 0x%x)\n", trackingImage.type(), CV_8UC1);
-    goodFeaturesToTrack(trackingImage, points, 100, 0.1, 10);     //find good features to track
+    goodFeaturesToTrack(trackingImage, points, 100, 0.01, 10);      //find good features to track
     
-    std::cout<<"Features found"<<std::endl;                      //test if features are found
+    std::cout<<"-------------------"<<std::endl;
+    std::cout<<"--Features found---"<<std::endl;                    //test if features are found
     
     for (int c = 0; c< points.size(); c++){
-        circle(frames[0], points[c], 5, Scalar(1.0,0.0,0.0,1.0));//display features
+        circle(firstframe, points[c], 5, Scalar(1.0,0.0,0.0,1.0));  //display features
     }
-    imshow("Display Features", frames[0]);
-     waitKey(0);
+    imshow("Display Features", firstframe);
     
+    waitKey(0);
+    
+    //--------------track features-----------------------
+    vector<Point2f> prevpts;
+    vector<Point2f> nextpts;
+    vector<uchar> status;
+    vector<float> error;                                           //settings
+    
+    prevpts = points;
+    
+    for (int t = 0; t< frames.size()-1; t++){
+        calcOpticalFlowPyrLK(frames[t], frames[t+1], prevpts, nextpts, status, error);
+        
+        prevpts = nextpts;
+        
+        for (int c = 0; c< prevpts.size(); c++){
+            circle(frames[t+1], prevpts[c], 5, Scalar(1.0,0.0,0.0,1.0)); 
+            char winName[16];
+            sprintf(winName, "test %d",t+1);
+            namedWindow(winName);
+            imshow(winName, frames[t+1]);
+        }                                                         //TESTING
+     }
+    
+    waitKey(0);
     //-------------------blending------------------------
    
     Mat prevBlend = Mat::zeros(frames[0].size(), frames[0].type()); //create prevBlend = frames[0] which will be used later in blending
@@ -108,8 +135,9 @@ int main(int, char**)
         imshow(winName, dst);   //test 
          */                                                      //TEST(just for testing)
     }
+    std::cout<<"--Finished blending---"<<std::endl;
     
-    //------------------display------------------------
+    //------------------display--------------------------
     namedWindow("Blend");                                          //create new window for blended picture
     
     imwrite("/Users/yanling/Documents/autopan/blend.png", dst);    //save blended image
