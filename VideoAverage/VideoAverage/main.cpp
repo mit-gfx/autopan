@@ -84,7 +84,7 @@ int main(int, char**)
     destroyWindow("Select");
 
     //--------------pick 3 best points--------------------
-    double disf = 100, diss = 100, dist = 100;
+    double disf = 1000, diss = 1000, dist = 1000;
     int fpts, spts, tpts;
     for (int i = 0; i < points.size(); i++) {
         double distance = sqrt((points[i].x-a.x)*(points[i].x-a.x) + (points[i].y-a.y)*(points[i].y-a.y));
@@ -131,6 +131,10 @@ int main(int, char**)
     for (int t = 0; t< frames.size()-1; t++){
         calcOpticalFlowPyrLK(frames[t], frames[t+1], prevpts, nextpts, status, error);  //track feature
         
+        circle(frames[t], prevpts[fpts], 5, Scalar(1.0,0.0,0.0,1.0));
+        circle(frames[t], prevpts[spts], 5, Scalar(1.0,0.0,0.0,1.0));
+        circle(frames[t], prevpts[tpts], 5, Scalar(1.0,0.0,0.0,1.0));
+        
         prevSelectedPts[0] = prevpts[fpts]; prevSelectedPts[1] = prevpts[spts]; prevSelectedPts[2] = prevpts[tpts];
         nextSelectedPts[0] = nextpts[fpts]; nextSelectedPts[1] = nextpts[spts]; nextSelectedPts[2] = nextpts[tpts];  //the points need to be improved
         
@@ -143,7 +147,7 @@ int main(int, char**)
             char winName[16];
             sprintf(winName, "test %d",t+1);
             namedWindow(winName);
-            imshow(winName, warpedframe);                            //TEST WARPEDFRAME
+            imshow(winName, warpedframe);                                          //TEST WARPEDFRAME
         }
                    
         /*for (int c = 0; c< prevpts.size(); c++){
@@ -154,10 +158,9 @@ int main(int, char**)
             imshow(winName, frames[t+1]);
         }                                                       */  //TEST IF FEATURES ARE TRACKED
      }
-    
+        
     waitKey(0);
     
-        
     //-------------------blending------------------------
    
     Mat prevBlend = Mat::zeros(frames[0].size(), frames[0].type()); //create prevBlend = frames[0] which will be used later in blending
@@ -171,7 +174,7 @@ int main(int, char**)
         /*  PRINT 
         printf("alpha: %f, beta: %f\n", alpha ,beta);
         printf("src1.type: %d, src2.type: %d; src1.depth: %d\n", frame.type(), prevBlend.type(), frame.depth());  //check
-        */                                                      //PRINT(just for testing)
+        */    //PRINT(just for testing)
         
         addWeighted( frame, alpha, prevBlend, beta, 0.0, dst);     //blending
         
@@ -182,7 +185,7 @@ int main(int, char**)
         sprintf(winName, "Test %d", f);
         namedWindow(winName);    //create new window for testing
         imshow(winName, dst);   //test 
-         */                                                      //TEST(just for testing)
+         */    //TEST(just for testing)
     }
     std::cout<<"--Finished blending---"<<std::endl;
     
