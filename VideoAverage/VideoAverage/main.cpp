@@ -10,7 +10,6 @@ double alpha;
 double beta;
 
 Mat dst;
-Mat firstframe;
 vector<Mat> frames;
 vector<Point2f> points;
 CvPoint a;
@@ -55,26 +54,15 @@ int main(int, char**)
     }
     destroyWindow("Video");
     
-    //-------------------select--------------------------
-    
-    namedWindow("Select");                            
-    imshow("Select", frames[0]);                                   //show the first frame of the video 
-    
-    setMouseCallback("Select", mousecallback);
-
-    while(mouseclick == false){
-        waitKey(0);                                                //press any key to continue...
-    }
-    destroyWindow("Select");
     
     //--------------find features to track---------------
     
-    namedWindow("Display Features");
+    Mat firstframe;
     firstframe = frames[0];
 
     Mat trackingImage;
     cvtColor(frames[0], trackingImage, CV_RGB2GRAY);
-    goodFeaturesToTrack(trackingImage, points, 100, 0.01, 10);      //find good features to track
+    goodFeaturesToTrack(trackingImage, points, 200, 0.01, 10);      //find good features to track
     
     std::cout<<"-------------------"<<std::endl;
     std::cout<<"--Features found---"<<std::endl;                    //test if features are found
@@ -82,33 +70,94 @@ int main(int, char**)
     for (int c = 0; c< points.size(); c++){
         circle(firstframe, points[c], 5, Scalar(1.0,0.0,0.0,1.0));  //display features
     }
-    imshow("Display Features", firstframe);
     
-    waitKey(0);
+    //-------------------select--------------------------
     
-    //--------------track features-----------------------
+    namedWindow("Select");                            
+    imshow("Select", firstframe);                                   //show the first frame of the video 
+    
+    setMouseCallback("Select", mousecallback);
+
+    while(mouseclick == false){
+        waitKey(0);                                                //press any key to continue...
+    }
+    destroyWindow("Select");
+
+    //--------------pick 3 best points--------------------
+    double disf = 100, diss = 100, dist = 100;
+    int fpts, spts, tpts;
+    for (int i = 0; i < points.size(); i++) {
+        double distance = sqrt((points[i].x-a.x)*(points[i].x-a.x) + (points[i].y-a.y)*(points[i].y-a.y));
+        if (disf > distance) {
+            disf = distance;
+            fpts = i;
+        }
+    }
+    for (int i = 0; i < points.size(); i++) {
+        double distance = sqrt((points[i].x-a.x)*(points[i].x-a.x) + (points[i].y-a.y)*(points[i].y-a.y));
+        if (diss > distance) {
+            diss = distance;
+            if (i != fpts) {
+                spts = i;
+            }
+        }
+    }
+    for (int i = 0; i < points.size(); i++) {
+        double distance = sqrt((points[i].x-a.x)*(points[i].x-a.x) + (points[i].y-a.y)*(points[i].y-a.y));
+        if (dist > distance) {
+            dist = distance;
+            if (i != fpts) {
+                if (i != spts) {
+                    tpts = i;
+                }
+            }
+        }
+    }
+
+    printf("first point: %d, second point: %d, third point: %d ", fpts, spts, tpts);
+    std::cout<<"------------------"<<std::endl;
+    
+    //--------------track features & warp image-----------
     vector<Point2f> prevpts;
     vector<Point2f> nextpts;
     vector<uchar> status;
     vector<float> error;                                           //settings
+    prevpts = points; 
     
-    prevpts = points;
+    Mat transform;
+    Mat warpedframe;
+    Point2f prevSelectedPts[3], nextSelectedPts[3];
     
     for (int t = 0; t< frames.size()-1; t++){
-        calcOpticalFlowPyrLK(frames[t], frames[t+1], prevpts, nextpts, status, error);
+        calcOpticalFlowPyrLK(frames[t], frames[t+1], prevpts, nextpts, status, error);  //track feature
+        
+        prevSelectedPts[0] = prevpts[fpts]; prevSelectedPts[1] = prevpts[spts]; prevSelectedPts[2] = prevpts[tpts];
+        nextSelectedPts[0] = nextpts[fpts]; nextSelectedPts[1] = nextpts[spts]; nextSelectedPts[2] = nextpts[tpts];  //the points need to be improved
+        
+        transform = getAffineTransform(nextSelectedPts, prevSelectedPts);          
+        warpAffine(frames[t], warpedframe, transform, frames[t].size());                //warp image
         
         prevpts = nextpts;
         
-        for (int c = 0; c< prevpts.size(); c++){
+        for (int c = 0; c< frames.size()-1; c++){
+            char winName[16];
+            sprintf(winName, "test %d",t+1);
+            namedWindow(winName);
+            imshow(winName, warpedframe);                            //TEST WARPEDFRAME
+        }
+                   
+        /*for (int c = 0; c< prevpts.size(); c++){
             circle(frames[t+1], prevpts[c], 5, Scalar(1.0,0.0,0.0,1.0)); 
             char winName[16];
             sprintf(winName, "test %d",t+1);
             namedWindow(winName);
             imshow(winName, frames[t+1]);
-        }                                                         //TESTING
+        }                                                       */  //TEST IF FEATURES ARE TRACKED
      }
     
     waitKey(0);
+    
+        
     //-------------------blending------------------------
    
     Mat prevBlend = Mat::zeros(frames[0].size(), frames[0].type()); //create prevBlend = frames[0] which will be used later in blending
