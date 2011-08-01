@@ -38,12 +38,12 @@ int main(int, char**)
     //------------------recording----------------------
     
     namedWindow("Video");                                         //create a window
-        
+
     while(record == false)
     {
          if(waitKey('r') == 82) record =true;                     //start the record
     }
-    
+
     while(record == true)
     {
         Mat frame;
@@ -53,16 +53,16 @@ int main(int, char**)
         if(waitKey('s') == 83) record =false;                     //finish the record
     }
     destroyWindow("Video");
-    
+
     
     //--------------find features to track---------------
     
     Mat firstframe;
     firstframe = frames[0];
-
+    
     Mat trackingImage;
     cvtColor(frames[0], trackingImage, CV_RGB2GRAY);
-    goodFeaturesToTrack(trackingImage, points, 200, 0.01, 10);      //find good features to track
+    goodFeaturesToTrack(trackingImage, points, 300, 0.01, 10);      //find good features to track
     
     std::cout<<"-------------------"<<std::endl;
     std::cout<<"--Features found---"<<std::endl;                    //test if features are found
@@ -116,40 +116,54 @@ int main(int, char**)
 
     printf("first point: %d, second point: %d, third point: %d ", fpts, spts, tpts);
     std::cout<<"------------------"<<std::endl;
-    
+
     //--------------track features & warp image-----------
     vector<Point2f> prevpts;
     vector<Point2f> nextpts;
     vector<uchar> status;
     vector<float> error;                                           //settings
     prevpts = points; 
-    
+
     Mat transform;
     Mat warpedframe;
     Point2f prevSelectedPts[3], nextSelectedPts[3];
-    
+
     for (int t = 0; t< frames.size()-1; t++){
         calcOpticalFlowPyrLK(frames[t], frames[t+1], prevpts, nextpts, status, error);  //track feature
-        
-        circle(frames[t], prevpts[fpts], 5, Scalar(1.0,0.0,0.0,1.0));
-        circle(frames[t], prevpts[spts], 5, Scalar(1.0,0.0,0.0,1.0));
-        circle(frames[t], prevpts[tpts], 5, Scalar(1.0,0.0,0.0,1.0));
-        
+
         prevSelectedPts[0] = prevpts[fpts]; prevSelectedPts[1] = prevpts[spts]; prevSelectedPts[2] = prevpts[tpts];
         nextSelectedPts[0] = nextpts[fpts]; nextSelectedPts[1] = nextpts[spts]; nextSelectedPts[2] = nextpts[tpts];  //the points need to be improved
+
+        // compute x,y difference between next point 0 and prev point 0
+        // construct an affine transformation matrix of that:
+        //  1  0  dx
+        //  0  1  dy
         
-        transform = getAffineTransform(nextSelectedPts, prevSelectedPts);          
-        warpAffine(frames[t], warpedframe, transform, frames[t].size());                //warp image
+        //transform = getAffineTransform(nextSelectedPts, prevSelectedPts); 
         
-        prevpts = nextpts;
+        transform = Mat::eye(2, 3, CV_32F);
+        transform.at<float>(0, 2) = prevpts[fpts].x-nextpts[fpts].x;
+        transform.at<float>(1, 2) = prevpts[fpts].y-nextpts[fpts].y;
         
+        cout << "Transform " << t << ":\n" << transform << "\n";
+        cout << "prev points: "
+             << prevSelectedPts[0] << prevSelectedPts[1] << prevSelectedPts[2] << "\n";
+        cout << "next points: "
+             << nextSelectedPts[0] << nextSelectedPts[1] << nextSelectedPts[2] << "\n";
+        
+        warpAffine(frames[t], warpedframe, transform, frames[t].size());                   //warp image
+        
+        //prevpts = nextpts; 
+        
+        
+        ///*
         for (int c = 0; c< frames.size()-1; c++){
             char winName[16];
             sprintf(winName, "test %d",t+1);
             namedWindow(winName);
-            imshow(winName, warpedframe);                                          //TEST WARPEDFRAME
-        }
-                   
+            imshow(winName, warpedframe);                                          
+        }//*/   //TEST WARPEDFRAME
+
         /*for (int c = 0; c< prevpts.size(); c++){
             circle(frames[t+1], prevpts[c], 5, Scalar(1.0,0.0,0.0,1.0)); 
             char winName[16];
@@ -164,37 +178,37 @@ int main(int, char**)
     //-------------------blending------------------------
    
     Mat prevBlend = Mat::zeros(frames[0].size(), frames[0].type()); //create prevBlend = frames[0] which will be used later in blending
-    
+
     for (int f = 0; f < frames.size(); f++) {
         alpha = 1.0 / (f + 1); 
-        beta = 1.0 - alpha;                                        //change alpha & beta
-        
-        Mat frame = frames[f];                                     //get the frame
-        
+        beta = 1.0 - alpha;                                         //change alpha & beta
+
+        Mat frame = frames[f];                                      //get the frame
+
         /*  PRINT 
         printf("alpha: %f, beta: %f\n", alpha ,beta);
         printf("src1.type: %d, src2.type: %d; src1.depth: %d\n", frame.type(), prevBlend.type(), frame.depth());  //check
         */    //PRINT(just for testing)
+
+        addWeighted( frame, alpha, prevBlend, beta, 0.0, dst);      //blending
         
-        addWeighted( frame, alpha, prevBlend, beta, 0.0, dst);     //blending
-        
-        prevBlend = dst;                                           //save blended picture
-        
+        prevBlend = dst;                                            //save blended picture
+
         /*  TEST
         char winName[16];
         sprintf(winName, "Test %d", f);
         namedWindow(winName);    //create new window for testing
         imshow(winName, dst);   //test 
-         */    //TEST(just for testing)
+         */    //TEST (just for testing)
     }
     std::cout<<"--Finished blending---"<<std::endl;
     
     //------------------display--------------------------
-    namedWindow("Blend");                                          //create new window for blended picture
+    namedWindow("Blend");                                           //create new window for blended picture
     
-    imwrite("/Users/yanling/Documents/autopan/blend.png", dst);    //save blended image
+    imwrite("/Users/yanling/Documents/autopan/blend.png", dst);     //save blended image
     
-    imshow( "Blend", dst);                                         //show blended image
+    imshow( "Blend", dst);                                          //show blended image
     
     if(waitKey(0) == 81) exit(0);
     
