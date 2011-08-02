@@ -10,6 +10,7 @@ double alpha;
 double beta;
 
 Mat dst;
+Mat dst2;
 vector<Mat> frames;
 vector<Point2f> points;
 CvPoint a;
@@ -31,30 +32,42 @@ void mousecallback(int event, int x, int y, int, void* )          //mouse call b
 }
 
 int main(int, char**)
-{   VideoCapture cap(0); 
-    if(!cap.isOpened())  
-    return -1;                                                    //test the camera 
+{  
+    //-----------------choose mode---------------------
+    string input;
+    std::cout<<"-------------------"<<std::endl;
+    std::cout<<"----SELECT MODE----"<<std::endl; 
+    std::cout<<"(please enter 'camera' or 'video')"<<std::endl;
+    std::cin>>input;
     
-    //------------------recording----------------------
+    if (input == "camera") {
+           
+      VideoCapture cap(0); 
+      if(!cap.isOpened())  
+      return -1;                                                    //test the camera 
     
-    namedWindow("Video");                                         //create a window
+      //------------------recording----------------------
+    
+      namedWindow("Video");                                         //create a window
 
-    while(record == false)
-    {
-         if(waitKey('r') == 82) record =true;                     //start the record
+      while(record == false)
+      {
+           if(waitKey('r') == 82) record =true;                     //start the record
+      }
+
+      while(record == true)
+      {
+          Mat frame;
+          cap.read(frame);
+          imshow("Video", frame);
+          frames.push_back(frame.clone());                          //recording (push_back)
+          if(waitKey('s') == 83) record =false;                     //finish the record
+      }
+      destroyWindow("Video");
+      }else{
+        
+      
     }
-
-    while(record == true)
-    {
-        Mat frame;
-        cap.read(frame);
-        imshow("Video", frame);
-        frames.push_back(frame.clone());                          //recording (push_back)
-        if(waitKey('s') == 83) record =false;                     //finish the record
-    }
-    destroyWindow("Video");
-
-    
     //--------------find features to track---------------
     
     Mat firstframe;
@@ -121,7 +134,8 @@ int main(int, char**)
     vector<Point2f> prevpts;
     vector<Point2f> nextpts;
     vector<uchar> status;
-    vector<float> error;                                           //settings
+    vector<float> error;
+    vector<Mat> result;//settings
     prevpts = points; 
 
     Mat transform;
@@ -133,7 +147,8 @@ int main(int, char**)
 
         prevSelectedPts[0] = prevpts[fpts]; prevSelectedPts[1] = prevpts[spts]; prevSelectedPts[2] = prevpts[tpts];
         nextSelectedPts[0] = nextpts[fpts]; nextSelectedPts[1] = nextpts[spts]; nextSelectedPts[2] = nextpts[tpts];  //the points need to be improved
-
+        circle(frames[t], nextpts[fpts], 5, Scalar(1.0,0.0,0.0,1.0));
+        
         // compute x,y difference between next point 0 and prev point 0
         // construct an affine transformation matrix of that:
         //  1  0  dx
@@ -142,8 +157,8 @@ int main(int, char**)
         //transform = getAffineTransform(nextSelectedPts, prevSelectedPts); 
         
         transform = Mat::eye(2, 3, CV_32F);
-        transform.at<float>(0, 2) = prevpts[fpts].x-nextpts[fpts].x;
-        transform.at<float>(1, 2) = prevpts[fpts].y-nextpts[fpts].y;
+        transform.at<float>(0, 2) = points[fpts].x-nextpts[fpts].x;
+        transform.at<float>(1, 2) = points[fpts].y-nextpts[fpts].y;
         
         cout << "Transform " << t << ":\n" << transform << "\n";
         cout << "prev points: "
@@ -152,8 +167,9 @@ int main(int, char**)
              << nextSelectedPts[0] << nextSelectedPts[1] << nextSelectedPts[2] << "\n";
         
         warpAffine(frames[t], warpedframe, transform, frames[t].size());                   //warp image
+        result.push_back(warpedframe.clone());
         
-        //prevpts = nextpts; 
+        prevpts = nextpts; 
         
         
         ///*
@@ -177,13 +193,15 @@ int main(int, char**)
     
     //-------------------blending------------------------
    
-    Mat prevBlend = Mat::zeros(frames[0].size(), frames[0].type()); //create prevBlend = frames[0] which will be used later in blending
-
-    for (int f = 0; f < frames.size(); f++) {
+    Mat prevBlend = Mat::zeros(result[0].size(), result[0].type()); //create prevBlend = frames[0] which will be used later in blending
+    Mat prevBlend2 = Mat::zeros(frames[0].size(), result[0].type());
+    
+    //blend the warped frame
+    for (int f = 0; f < result.size(); f++) {
         alpha = 1.0 / (f + 1); 
         beta = 1.0 - alpha;                                         //change alpha & beta
 
-        Mat frame = frames[f];                                      //get the frame
+        Mat frame = result[f];                                      //get the frame
 
         /*  PRINT 
         printf("alpha: %f, beta: %f\n", alpha ,beta);
@@ -201,14 +219,46 @@ int main(int, char**)
         imshow(winName, dst);   //test 
          */    //TEST (just for testing)
     }
+    
+    //blend the original frame
+    for (int f = 0; f < frames.size(); f++) {
+        alpha = 1.0 / (f + 1); 
+        beta = 1.0 - alpha;                                         //change alpha & beta
+        
+        Mat frame = frames[f];                                      //get the frame
+        
+        /*  PRINT 
+         printf("alpha: %f, beta: %f\n", alpha ,beta);
+         printf("src1.type: %d, src2.type: %d; src1.depth: %d\n", frame.type(), prevBlend.type(), frame.depth());  //check
+         */    //PRINT(just for testing)
+        
+        addWeighted( frame, alpha, prevBlend2, beta, 0.0, dst2);      //blending
+        
+        prevBlend2 = dst2;                                            //save blended picture
+        
+        /*  TEST
+         char winName[16];
+         sprintf(winName, "Test %d", f);
+         namedWindow(winName);    //create new window for testing
+         imshow(winName, dst);   //test 
+         */    //TEST (just for testing)
+    }
+
     std::cout<<"--Finished blending---"<<std::endl;
     
     //------------------display--------------------------
-    namedWindow("Blend");                                           //create new window for blended picture
+    namedWindow("Blend(result)");                                           //create new window for blended picture
     
-    imwrite("/Users/yanling/Documents/autopan/blend.png", dst);     //save blended image
+    imwrite("/Users/yanling/Documents/autopan/blend.png", dst);     //save blended "RESULT" image
     
-    imshow( "Blend", dst);                                          //show blended image
+    imshow( "Blend(result)", dst);                                          //show blended "RESULT" image
+    
+    namedWindow("Blend(original)");                                           //create new window for blended picture
+    
+    imwrite("/Users/yanling/Documents/autopan/blend2.png", dst2);     //save blended "ORIGINAL" image
+    
+    imshow( "Blend(original)", dst2);                                          //show blended "ORIGINAL" image
+
     
     if(waitKey(0) == 81) exit(0);
     
